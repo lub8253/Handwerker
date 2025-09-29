@@ -8,17 +8,31 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var store = BookingStore()
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Handwerker")
+        TabView {
+            StartseiteView()
+                .environmentObject(store)
+                .tabItem {
+                    Label("Startseite", systemImage: "house.fill")
+                }
+            
+            BuchungListView()
+                .environmentObject(store)
+                .tabItem {
+                    Label("Buchungen", systemImage: "book.fill")
+                }
+            
+            SucheView()
+                .tabItem {
+                    Label("Suche", systemImage: "magnifyingglass")
+                }
         }
-        .padding()
     }
 }
 
 #Preview {
     ContentView()
 }
+

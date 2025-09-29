@@ -12,6 +12,7 @@ struct HandwerkerApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(BookingStore())
         }
     }
 }
