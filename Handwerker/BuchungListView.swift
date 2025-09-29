@@ -7,89 +7,59 @@
 
 import SwiftUI
 
-struct BuchungView: View {
+struct BuchungListView: View {
+    @EnvironmentObject var store: BookingStore
+    
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
+                // Hintergrund wie Startseite
                 LinearGradient(gradient: Gradient(colors: [.blue.opacity(0.3), .blue.opacity(0.7)]),
                                startPoint: .top,
                                endPoint: .bottom)
                     .ignoresSafeArea()
                 
-                VStack(alignment: .leading, spacing: 16) {
-                    
-                    // Profil-Icon
-                    HStack {
-                        Button(action: {}) {
-                            Image(systemName: "person.crop.circle")
-                                .font(.system(size: 28))
-                                .padding()
-                                .background(.ultraThinMaterial)
-                                .clipShape(Circle())
+                List {
+                    ForEach(store.bookings) { booking in
+                        NavigationLink(destination: BuchungsDetailView(booking: booking)) {
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(booking.providerName)
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                                Text("\(booking.date) um \(booking.time)")
+                                    .font(.subheadline)
+                                    .foregroundColor(.white.opacity(0.85))
+                            }
+                            .padding(.vertical, 12)
+                            .padding(.horizontal, 16)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(
+                                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                    .fill(Color.blue.opacity(0.25))
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                    .stroke(Color.white.opacity(0.15))
+                            )
+                            .shadow(color: .black.opacity(0.08), radius: 6, x: 0, y: 3)
                         }
-                        Spacer()
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
+                        .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 12, trailing: 16))
                     }
-                    
-                    Text("Käse Krainer")
-                        .font(.title)
-                        .foregroundColor(.white)
-                    Text("Kommt zu deiner Stelle")
-                        .foregroundColor(.white.opacity(0.8))
-                    
-                    Group {
-                        Text("Datum & Uhrzeit auswählen")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                        
-                        TextField("Datum", text: .constant(""))
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                        
-                        TextField("Uhrzeit", text: .constant(""))
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                    }
-                    
-                    Group {
-                        Text("Extras")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                        
-                        Button("+ Fensterreinigung - 20€") {}
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.white.opacity(0.3))
-                            .cornerRadius(8)
-                        
-                        Button("+ Bodenreinigung - 15€") {}
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.white.opacity(0.3))
-                            .cornerRadius(8)
-                    }
-                    
-                    Group {
-                        Text("Zahlungsmethode")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                        
-                        Text("VISA **** 4635")
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(Color.white.opacity(0.3))
-                            .cornerRadius(8)
-                    }
-                    
-                    Spacer()
-                    
-                    Button("Buchung bestätigen") {}
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.cyan)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
                 }
-                .padding()
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
             }
-            .navigationBarHidden(true)
+            .navigationTitle("Buchungen")
+            .navigationBarTitleDisplayMode(.large)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarBackground(.clear, for: .navigationBar)
+            .toolbarColorScheme(.dark, for: .navigationBar)
         }
     }
+}
+
+#Preview {
+    ContentView()
 }
