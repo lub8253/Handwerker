@@ -99,7 +99,7 @@ struct StartseiteView: View {
                                             .font(.title2)
                                             .bold()
                                             .accessibilityAddTraits(.isHeader)
-                                            .foregroundColor(.white)
+                                            .foregroundColor(.black)
                                             .padding(.leading, 8)
                                             .id(kategorie) // Marker für ScrollViewReader
                                         
@@ -109,11 +109,11 @@ struct StartseiteView: View {
                                                     VStack(alignment: .leading, spacing: 8) {
                                                         Text(provider.name)
                                                             .font(.headline)
-                                                            .foregroundColor(.white)
+                                                            .foregroundColor(.black)
                                                         
                                                         Text(provider.beschreibung)
                                                             .font(.subheadline)
-                                                            .foregroundColor(.white.opacity(0.8))
+                                                            .foregroundColor(.black.opacity(0.8))
                                                         
                                                         Spacer()
                                                         
@@ -133,7 +133,7 @@ struct StartseiteView: View {
                                                     }
                                                     .frame(width: 220, height: 140)
                                                     .padding()
-                                                    .background(Color.blue.opacity(0.6))
+                                                    .background(Color.white.opacity(0.6))
                                                     .cornerRadius(12)
                                                     .accessibilityElement(children: .combine)
                                                     .accessibilityLabel("\(provider.name), Kategorie \(provider.kategorie). \(provider.beschreibung)")
