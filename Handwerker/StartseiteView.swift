@@ -133,7 +133,7 @@ struct StartseiteView: View {
                                                     }
                                                     .frame(width: 220, height: 140)
                                                     .padding()
-                                                    .background(Color.blue.opacity(0.6))
+                                                    .background(Color.white.opacity(0.6))
                                                     .cornerRadius(12)
                                                     .accessibilityElement(children: .combine)
                                                     .accessibilityLabel("\(provider.name), Kategorie \(provider.kategorie). \(provider.beschreibung)")
