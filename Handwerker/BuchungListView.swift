@@ -13,12 +13,6 @@ struct BuchungListView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                // Hintergrund wie Startseite
-                LinearGradient(gradient: Gradient(colors: [.blue.opacity(0.3), .blue.opacity(0.7)]),
-                               startPoint: .top,
-                               endPoint: .bottom)
-                    .ignoresSafeArea()
-                
                 List {
                     ForEach(store.bookings) { booking in
                         NavigationLink(destination: BuchungsDetailView(booking: booking)) {
@@ -42,6 +36,9 @@ struct BuchungListView: View {
                                     .stroke(Color.white.opacity(0.15))
                             )
                             .shadow(color: .black.opacity(0.08), radius: 6, x: 0, y: 3)
+                            .accessibilityElement(children: .combine)
+                            .accessibilityLabel("\(booking.providerName), am \(booking.date) um \(booking.time)")
+                            .accessibilityHint("Zeige Buchungsdetails")
                         }
                         .listRowSeparator(.hidden)
                         .listRowBackground(Color.clear)
@@ -51,6 +48,7 @@ struct BuchungListView: View {
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
             }
+            .appBackground()
             .navigationTitle("Buchungen")
             .navigationBarTitleDisplayMode(.large)
             .toolbarBackground(.visible, for: .navigationBar)

@@ -13,12 +13,6 @@ struct BuchungsDetailView: View {
     
     var body: some View {
         ZStack {
-            // Hintergrund wie auf den anderen Screens
-            LinearGradient(gradient: Gradient(colors: [.blue.opacity(0.3), .blue.opacity(0.7)]),
-                           startPoint: .top,
-                           endPoint: .bottom)
-                .ignoresSafeArea()
-            
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     // Custom navigation header
@@ -30,6 +24,8 @@ struct BuchungsDetailView: View {
                                 .padding(10)
                                 .background(.glassBackground, in: Circle())
                         }
+                        .accessibilityLabel("Zurück")
+                        .accessibilityHint("Zurück zur Liste")
                         Spacer()
                     }
                     
@@ -60,6 +56,7 @@ struct BuchungsDetailView: View {
                                     .foregroundStyle(.black.opacity(0.9))
                             }
                         }
+                        .accessibilityLabel("Extras: \(booking.extras.joined(separator: ", "))")
                     }
                     
                     Text("Zahlungsmethode: \(booking.paymentMethod)")
@@ -72,6 +69,8 @@ struct BuchungsDetailView: View {
                 .padding(.top, 12)
             }
         }
+        .appBackground()
         .navigationBarHidden(true)
     }
 }
+
