@@ -6,13 +6,26 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 @main
 struct HandwerkerApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+
     var body: some Scene {
         WindowGroup {
+            let store = BookingStore()
             ContentView()
-                .environmentObject(BookingStore())
+                .environmentObject(store)
+                .task {
+                    // Anonymous sign-in for a quick unique user ID
+                    do {
+                        let _ = try await Auth.auth().signInAnonymously()
+                    } catch {
+                        // Handle auth error if needed
+                    }
+                    await store.startListeningIfPossible()
+                }
         }
     }
 }

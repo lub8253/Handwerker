@@ -1,3 +1,6 @@
+// UNUSED: This view is not referenced anywhere. Consider deleting this file to reduce clutter.
+// Keeping temporarily for reference/previews.
+
 import SwiftUI
 
 struct SearchResultsView: View {
@@ -5,13 +8,13 @@ struct SearchResultsView: View {
     @StateObject private var vm = ProvidersViewModel()
     @Binding var query: String
 
-    var filtered: [Provider] {
-        if query.isEmpty {
-            return vm.providers
-        }
-        let lower = query.lowercased()
+    var filtered: [ServiceProvider] {
+        let q = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !q.isEmpty else { return vm.providers }
         return vm.providers.filter {
-            $0.name.lowercased().contains(lower)
+            $0.name.localizedCaseInsensitiveContains(q)
+            || $0.beschreibung.localizedCaseInsensitiveContains(q)
+            || $0.kategorie.localizedCaseInsensitiveContains(q)
         }
     }
 
@@ -19,9 +22,9 @@ struct SearchResultsView: View {
         Group {
             if vm.isLoading {
                 ProgressView()
-            } else if let error = vm.error {
+            } else if let err = vm.errorMessage {
                 VStack(spacing: 8) {
-                    Text("Error: \(error.localizedDescription)")
+                    Text(err)
                         .multilineTextAlignment(.center)
                     Button("Retry") {
                         Task {
@@ -31,28 +34,25 @@ struct SearchResultsView: View {
                 }
                 .padding()
             } else if filtered.isEmpty {
-                ContentUnavailableView("No matching providers found.")
+                ContentUnavailableView("Keine Treffer",
+                                       systemImage: "magnifyingglass",
+                                       description: Text("Versuche einen anderen Suchbegriff."))
             } else {
                 List(filtered) { provider in
-                    NavigationLink(value: provider) {
-                        HStack(spacing: 12) {
-                            Image(systemName: "person.crop.circle.fill")
-                                .font(.title2)
-                                .foregroundColor(.accentColor)
-                            VStack(alignment: .leading) {
-                                Text(provider.name)
-                                    .font(.headline)
-                                if let tags = provider.tags, !tags.isEmpty {
-                                    Text(tags.joined(separator: ", "))
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
-                                }
-                            }
-                        }
-                        .padding(.vertical, 6)
-                    }
-                    .navigationDestination(for: Provider.self) { provider in
+                    NavigationLink {
                         NeueBuchungView(providerName: provider.name)
+                            .environmentObject(store)
+                    } label: {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(provider.name).font(.headline)
+                            Text(provider.kategorie)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            Text(provider.beschreibung)
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
+                        .accessibilityHint("Termin bei \(provider.name) buchen")
                     }
                 }
                 .listStyle(.insetGrouped)
@@ -72,3 +72,4 @@ struct SearchResultsView: View {
     SearchResultsView(query: .constant(""))
         .environmentObject(BookingStore())
 }
+

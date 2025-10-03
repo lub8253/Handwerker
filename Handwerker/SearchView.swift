@@ -1,82 +1,72 @@
 import SwiftUI
 
-struct SearchView: View {
+struct SucheView: View { @Binding var selectedTab: Int
     @EnvironmentObject var store: BookingStore
-    @Environment(\.dismiss) private var dismiss
-
+    @StateObject private var vm = ProvidersViewModel()
     @State private var query: String = ""
 
-    // Combined search across name, description, and category
-    var filteredProviders: [ServiceProvider] {
+    var filtered: [ServiceProvider] {
         let q = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !q.isEmpty else { return serviceProviders }
-        return serviceProviders.filter { provider in
-            provider.name.localizedCaseInsensitiveContains(q) ||
-            provider.beschreibung.localizedCaseInsensitiveContains(q) ||
-            provider.kategorie.localizedCaseInsensitiveContains(q)
+        guard !q.isEmpty else { return vm.providers }
+        return vm.providers.filter {
+            $0.name.localizedCaseInsensitiveContains(q)
+            || $0.beschreibung.localizedCaseInsensitiveContains(q)
+            || $0.kategorie.localizedCaseInsensitiveContains(q)
         }
     }
 
     var body: some View {
         NavigationStack {
             ZStack {
-                LinearGradient(gradient: Gradient(colors: [.blue.opacity(0.3), .blue.opacity(0.7)]),
-                               startPoint: .top,
-                               endPoint: .bottom)
-                    .ignoresSafeArea()
-
-                List {
-                    if filteredProviders.isEmpty {
-                        Text("Keine Treffer")
-                            .foregroundStyle(.secondary)
+                Group {
+                    if vm.isLoading {
+                        ProgressView("Lade Anbieter…")
+                    } else if let err = vm.errorMessage {
+                        VStack(spacing: 12) {
+                            Text(err)
+                            Button("Erneut versuchen") { Task { await vm.load() } }
+                                .buttonStyle(.borderedProminent)
+                        }
+                    } else if filtered.isEmpty {
+                        ContentUnavailableView("Keine Treffer",
+                                               systemImage: "magnifyingglass",
+                                               description: Text("Versuche einen anderen Suchbegriff."))
                     } else {
-                        ForEach(filteredProviders) { provider in
-                            NavigationLink(
-                                destination: NeueBuchungView(providerName: provider.name)
+                        List(filtered) { provider in
+                            NavigationLink {
+                                NeueBuchungView(providerName: provider.name)
                                     .environmentObject(store)
-                            ) {
+                            } label: {
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text(provider.name)
-                                        .font(.headline)
-                                    Text("Kategorie: \(provider.kategorie)")
+                                    Text(provider.name).font(.headline)
+                                    Text(provider.kategorie)
                                         .font(.subheadline)
                                         .foregroundStyle(.secondary)
                                     Text(provider.beschreibung)
                                         .font(.footnote)
                                         .foregroundStyle(.secondary)
                                 }
-                                .padding(.vertical, 6)
+                                .accessibilityHint("Termin bei \(provider.name) buchen")
                             }
-                            .listRowBackground(Color.clear)
                         }
-                    }
-                }
-                .listStyle(.insetGrouped)
-                .scrollContentBackground(.hidden)
-            }
-            .navigationTitle("Suche")
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button(action: { dismiss() }) {
-                        Image(systemName: "xmark")
-                            .font(.system(size: 16, weight: .semibold))
-                            .padding(8)
-                            .background(.glassBackground, in: Circle())
+                        .listStyle(.insetGrouped)
+                        .scrollContentBackground(.hidden)
                     }
                 }
             }
+            .appBackground()
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarBackground(.clear, for: .navigationBar)
+            .toolbarColorScheme(.dark, for: .navigationBar)
         }
-        .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: Text("Suche nach Name, Kategorie, ..."))
-        .onAppear { 
-            // Optionally pre-focus keyboard on appear (best-effort)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                // No direct API to focus .searchable field programmatically, left intentional.
-            }
-        }
+        .searchable(text: $query, prompt: "Suche nach Name, Kategorie, …")
+        .task { await vm.load() }
+        .refreshable { await vm.load() }
     }
 }
 
 #Preview {
-    SearchView()
+    SucheView(selectedTab: .constant(2))
         .environmentObject(BookingStore())
 }
