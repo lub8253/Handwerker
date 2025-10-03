@@ -99,7 +99,7 @@ struct StartseiteView: View {
                                             .font(.title2)
                                             .bold()
                                             .accessibilityAddTraits(.isHeader)
-                                            .foregroundColor(.white)
+                                            .foregroundColor(.black)
                                             .padding(.leading, 8)
                                             .id(kategorie) // Marker für ScrollViewReader
                                         
@@ -109,11 +109,11 @@ struct StartseiteView: View {
                                                     VStack(alignment: .leading, spacing: 8) {
                                                         Text(provider.name)
                                                             .font(.headline)
-                                                            .foregroundColor(.white)
+                                                            .foregroundColor(.black)
                                                         
                                                         Text(provider.beschreibung)
                                                             .font(.subheadline)
-                                                            .foregroundColor(.white.opacity(0.8))
+                                                            .foregroundColor(.black.opacity(0.8))
                                                         
                                                         Spacer()
                                                         
