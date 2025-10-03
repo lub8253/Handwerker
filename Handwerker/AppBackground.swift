@@ -3,9 +3,7 @@ import SwiftUI
 struct AppBackground: ViewModifier {
     func body(content: Content) -> some View {
         ZStack {
-            LinearGradient(gradient: Gradient(colors: [.blue.opacity(0.3), .blue.opacity(0.7)]),
-                           startPoint: .top,
-                           endPoint: .bottom)
+            Color(red:0.91, green:0.91, blue:0.91)
                 .ignoresSafeArea()
             content
         }

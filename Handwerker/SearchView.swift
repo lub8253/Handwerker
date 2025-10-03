@@ -38,16 +38,32 @@ struct SucheView: View { @Binding var selectedTab: Int
                                     .environmentObject(store)
                             } label: {
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text(provider.name).font(.headline)
+                                    Text(provider.name)
+                                        .font(.headline)
+                                        .foregroundColor(.white)
                                     Text(provider.kategorie)
                                         .font(.subheadline)
-                                        .foregroundStyle(.secondary)
+                                        .foregroundColor(.white.opacity(0.85))
                                     Text(provider.beschreibung)
                                         .font(.footnote)
-                                        .foregroundStyle(.secondary)
+                                        .foregroundColor(.white.opacity(0.8))
                                 }
+                                .padding(.vertical, 12)
+                                .padding(.horizontal, 16)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .background(
+                                    .glassBackground,
+                                    in: RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                        .stroke(Color.white.opacity(0.15))
+                                )
                                 .accessibilityHint("Termin bei \(provider.name) buchen")
                             }
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Color.clear)
+                            .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 12, trailing: 16))
                         }
                         .listStyle(.insetGrouped)
                         .scrollContentBackground(.hidden)
