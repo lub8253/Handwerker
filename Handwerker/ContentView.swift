@@ -10,58 +10,45 @@ import SwiftUI
 struct ContentView: View {
     @StateObject private var store = BookingStore()
     @State private var selectedTab: Int = 0
+    @State private var suchText: String = ""
+    
     
     var body: some View {
-        if #available(iOS 18.0, *) {
-            TabView(selection: $selectedTab) {
-                Tab(value: 0) {
-                    StartseiteView()
-                        .environmentObject(store)
-                } label: {
-                    Label("Startseite", systemImage: "house.fill")
-                }
-
-                Tab(value: 1) {
-                    BuchungListView()
-                        .environmentObject(store)
-                } label: {
-                    Label("Buchungen", systemImage: "book.fill")
-                }
-
-                Tab(value: 2, role: .search) {
-                    SucheView(selectedTab: $selectedTab)
-                        .environmentObject(store)
-                } label: {
-                    Label("Suche", systemImage: "magnifyingglass")
-                }
+        Group{
+            if #available(iOS 26, *){
+                NativeTabView()
+                    .tabBarMinimizeBehavior(.onScrollDown)
+                    .tabViewBottomAccessory{
+                        TestView()
+                    }
+            } else {
+                NativeTabView()
             }
-            .task { await store.startListeningIfPossible() }
-        } else {
-            TabView(selection: $selectedTab) {
-                StartseiteView()
-                    .environmentObject(store)
-                    .tabItem {
-                        Label("Startseite", systemImage: "house.fill")
-                    }
-                    .tag(0)
-
-                BuchungListView()
-                    .environmentObject(store)
-                    .tabItem {
-                        Label("Buchungen", systemImage: "book.fill")
-                    }
-                    .tag(1)
-
-                SucheView(selectedTab: $selectedTab)
-                    .environmentObject(store)
-                    .tabItem {
-                        Label("Suche", systemImage: "magnifyingglass")
-                    }
-                    .tag(2)
-            }
-            .task { await store.startListeningIfPossible() }
         }
     }
+    
+    
+    @ViewBuilder
+    func NativeTabView() -> some View {
+        TabView{
+            Tab.init("Start", systemImage: "house.fill"){
+                    StartseiteView()
+            }
+            Tab.init("Buchungen", systemImage: "book.fill"){}
+            Tab.init("Suche", systemImage: "magnifyingglass", role: .search){
+                NavigationStack{
+                    List{}
+                        .navigationTitle("Suche")
+                        .searchable(text: $suchText, placement: .toolbar, prompt: Text("Suche..."))
+                }
+            }
+        }
+    }
+}
+
+@ViewBuilder
+func TestView() -> some View {
+    Text("Hello, World!")
 }
 
 #Preview {
